@@ -48,11 +48,6 @@ function! GetPerlIndent()
         return 0
     endif
 
-    " Don't reindent comments on first column
-    if cline =~ '^#.'
-        return 0
-    endif
-
     " Get current syntax item at the line's first char
     let csynid = ''
     if b:indent_use_syntax
@@ -139,9 +134,9 @@ function! GetPerlIndent()
                         \ || synid =~ '^perl\(Sub\|Block\|Package\)Fold'
                 let brace = strpart(line, bracepos, 1)
                 if brace == '(' || brace == '{' || brace == '['
-                    let ind = ind + &sw
+                    let ind = ind + shiftwidth()
                 else
-                    let ind = ind - &sw
+                    let ind = ind - shiftwidth()
                 endif
             endif
             let bracepos = match(line, braceclass, bracepos + 1)
@@ -154,25 +149,25 @@ function! GetPerlIndent()
                         \ || synid == "perlBraces"
                         \ || synid == "perlStatementIndirObj"
                         \ || synid =~ '^perl\(Sub\|Block\|Package\)Fold'
-                let ind = ind - &sw
+                let ind = ind - shiftwidth()
             endif
         endif
     else
         if line =~ '[{[(]\s*\(#[^])}]*\)\=$'
-            let ind = ind + &sw
+            let ind = ind + shiftwidth()
         endif
         if cline =~ '^\s*[])}]'
-            let ind = ind - &sw
+            let ind = ind - shiftwidth()
         endif
     endif
 
     " Indent lines that begin with 'or' or 'and'
     if cline =~ '^\s*\(or\|and\)\>'
         if line !~ '^\s*\(or\|and\)\>'
-            let ind = ind + &sw
+            let ind = ind + shiftwidth()
         endif
     elseif line =~ '^\s*\(or\|and\)\>'
-        let ind = ind - &sw
+        let ind = ind - shiftwidth()
     endif
 
     return ind
